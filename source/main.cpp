@@ -1,7 +1,7 @@
-#include "../../../Qing/qing_common.h"
-#include "../../../Qing/qing_dir.h"
-#include "../../../Qing/qing_io.h"
-#include "../../../Qing/qing_string.h"
+#include "../../Qing/qing_common.h"
+#include "../../Qing/qing_dir.h"
+#include "../../Qing/qing_io.h"
+#include "../../Qing/qing_string.h"
 
 #define MAX_DISP 300.f
 #define MIN_DISP 0.f
@@ -34,11 +34,19 @@ void qing_read_crop_infos(const string filename, vector<Point2i>& cxy, vector<Si
     }
 }
 
+string qing_get_msk_prefix(const string imageName)
+{
+    string tempstr = imageName.substr(0, imageName.rfind('_'));
+    tempstr = tempstr.substr(0, tempstr.rfind('_')) + "_MSK";
+    return tempstr ;
+
+}
+
 int main(int argc, char * argv[])
 {
     //generate stereo infos frame by frame
     cout << "Usage : " << argv[0]
-         << " /media/ranqing/ranqing_wd/ZJU/HumanDatas/20161224/Humans_classified/  "
+         << " /media/ranqing/ranqing_wd/ZJU/HumanDatas/20161224/Humans_classified/ "
          << " /media/ranqing/ranqing_wd/ZJU/HumanDatas/20161224/Calib_Results/ "
          << " FRM_0001 "
          << " crop_infos.txt" << endl;
@@ -114,6 +122,11 @@ int main(int argc, char * argv[])
         string imgName1 = imageLists[i+1];
         string camName1 = imgName1.substr(0, imgName1.find('_'));
 
+        string mskName0 = qing_get_msk_prefix(imgName0);      //A03_IMG_1210
+        string mskName1 = qing_get_msk_prefix(imgName1);      //A04_IMG_1240
+        mskName0 = mskName0 + frameName.substr(frameName.find('_')) + ".JPG";
+        mskName1 = mskName1 + frameName.substr(frameName.find('_')) + ".JPG";
+
         if(stereoNameDict.end() != stereoNameDict.find(camName0) && camName1 == stereoNameDict[camName0])
         {
             string stereoName = camName0 + camName1;
@@ -133,14 +146,16 @@ int main(int argc, char * argv[])
             //cam1
             //img0
             //img1
+            //msk0
+            //msk1
             //cropxy0
             //cropxy1
             //cropsz
             //MAXDISP
             //MINDISP
             //Qmatrix
-            qing_write_stereo_info(filename, camName0, camName1, imgName0, imgName1, cxy[idx0], cxy[idx1], csz[idx0], MAX_DISP, MIN_DISP, qmatrixs[stereoidx]);
-        }
+            qing_write_stereo_info(filename, camName0, camName1, frameName, imgName0, imgName1, mskName0, mskName1, cxy[idx0], cxy[idx1], csz[idx0], MAX_DISP, MIN_DISP, qmatrixs[stereoidx]);
+         }
         else
         {
             cout << camName0 << ' ' << camName1 << endl;
