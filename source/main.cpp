@@ -115,6 +115,7 @@ int main(int argc, char * argv[])
         cout << filename << '\t' << qmatrixs[qmatrixs.size()-1] << endl;
     }
 
+    string suffix = ".jpg";
     for(int i = 0; i < imageLists.size() - 1;)
     {
         string imgName0 = imageLists[i];
@@ -122,10 +123,10 @@ int main(int argc, char * argv[])
         string imgName1 = imageLists[i+1];
         string camName1 = imgName1.substr(0, imgName1.find('_'));
 
-        string mskName0 = qing_get_msk_prefix(imgName0);      //A03_IMG_1210
-        string mskName1 = qing_get_msk_prefix(imgName1);      //A04_IMG_1240
-        mskName0 = mskName0 + frameName.substr(frameName.find('_')) + ".JPG";
-        mskName1 = mskName1 + frameName.substr(frameName.find('_')) + ".JPG";
+        string mskName0 = qing_get_msk_prefix(imgName0);                        //A03_IMG_1210
+        string mskName1 = qing_get_msk_prefix(imgName1);                        //A04_IMG_1240
+        mskName0 = mskName0 + frameName.substr(frameName.find('_')) + suffix;
+        mskName1 = mskName1 + frameName.substr(frameName.find('_')) + suffix;
 
         if(stereoNameDict.end() != stereoNameDict.find(camName0) && camName1 == stereoNameDict[camName0])
         {
