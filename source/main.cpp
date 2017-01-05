@@ -154,7 +154,7 @@ int main(int argc, char * argv[])
             //MAXDISP
             //MINDISP
             //Qmatrix
-            qing_write_stereo_info(filename, camName0, camName1, frameName, imgName0, imgName1, mskName0, mskName1, cxy[idx0], cxy[idx1], csz[idx0], MAX_DISP, MIN_DISP, qmatrixs[stereoidx]);
+            qing_write_stereo_info(filename, stereoidx, camName0, camName1, frameName, imgName0, imgName1, mskName0, mskName1, cxy[idx0], cxy[idx1], csz[idx0], MAX_DISP, MIN_DISP, qmatrixs[stereoidx]);
          }
         else
         {
