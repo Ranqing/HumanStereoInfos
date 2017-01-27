@@ -1,7 +1,7 @@
-#include "../../Qing/qing_common.h"
-#include "../../Qing/qing_dir.h"
-#include "../../Qing/qing_io.h"
-#include "../../Qing/qing_string.h"
+#include "../../../Qing/qing_common.h"
+#include "../../../Qing/qing_dir.h"
+#include "../../../Qing/qing_io.h"
+#include "../../../Qing/qing_string.h"
 
 #define MAX_DISP 300.f
 #define MIN_DISP 0.f
@@ -34,6 +34,32 @@ void qing_read_crop_infos(const string filename, vector<Point2i>& cxy, vector<Si
     }
 }
 
+void qing_read_disp_range_infos(const string filename, vector<float>& max_disps, vector<float>& min_disps) {
+    fstream fin(filename.c_str(), ios::in);
+    if(fin.is_open() == false) {
+        cerr << "failed to open " << filename << endl;
+        return ;
+    }
+
+    string s;
+    vector<string> words(0);
+    while(getline(fin, s)) {
+        if('#'==s[0]) continue;
+        words.clear();
+
+        qing_split_a_string_by_space(s, words);
+        string stereoName = words[0];
+        int maxd = string2int(words[1]);
+        int mind = string2int(words[2]);
+
+        max_disps.push_back(maxd);
+        min_disps.push_back(mind);
+    }
+
+    cout << "end of reading " << filename << ", max_disp size = " << max_disps.size() << ", min_disp size = " << min_disps.size() << endl;
+}
+
+
 string qing_get_msk_prefix(const string imageName)
 {
     string tempstr = imageName.substr(0, imageName.rfind('_'));
@@ -46,12 +72,13 @@ int main(int argc, char * argv[])
 {
     //generate stereo infos frame by frame
     cout << "Usage : " << argv[0]
-         << " /media/ranqing/ranqing_wd/ZJU/HumanDatas/20161224/Humans_classified/ "
+         << " /media/ranqing/ranqing_wd/ZJU/HumanDatas/20161224/Humans_frame/ "
          << " /media/ranqing/ranqing_wd/ZJU/HumanDatas/20161224/Calib_Results/ "
          << " FRM_0001 "
-         << " crop_infos.txt" << endl;
+         << " crop_infos.txt"
+         << " disp_range_info.txt"<< endl;
 
-    if (argc != 5)
+    if (argc != 6)
     {
         cerr << "invalid arguments. " << endl;
         return -1;
@@ -61,15 +88,21 @@ int main(int argc, char * argv[])
     string calibFolder = argv[2];         //calib folder
     string frameName = argv[3];           //frame name
     string cropInfos = argv[4];           //crop infos
+    string dispInfos = argv[5];           //disp range infos
     string outfolder = "./" + frameName;
 
     cout << "frame: " << frameName << endl;              //FRM
     cout << "image folder: " << imageFolder << endl;
     cout << "calib folder: " << calibFolder << endl;
     cout << "crop infos: " << cropInfos << endl;
+    cout << "disp infos: " << dispInfos << endl;
 
     cropInfos = imageFolder + cropInfos;                 //media/ranqing/ranqing_wd/ZJU/HumanDatas/20161224/Humans_classified/ + crop_infos.txt
+    dispInfos = imageFolder + dispInfos;
     imageFolder = imageFolder + frameName ;
+
+    cout << cropInfos << endl;
+    cout << dispInfos << endl;
 
     qing_create_dir(outfolder);
 
@@ -115,6 +148,9 @@ int main(int argc, char * argv[])
         cout << filename << '\t' << qmatrixs[qmatrixs.size()-1] << endl;
     }
 
+    vector<float> max_disps(0), min_disps(0);
+    qing_read_disp_range_infos(dispInfos, max_disps, min_disps);
+
     string suffix = ".jpg";
     for(int i = 0; i < imageLists.size() - 1;)
     {
@@ -155,8 +191,9 @@ int main(int argc, char * argv[])
             //MAXDISP
             //MINDISP
             //Qmatrix
-            qing_write_stereo_info(filename, stereoidx, camName0, camName1, frameName, imgName0, imgName1, mskName0, mskName1, cxy[idx0], cxy[idx1], csz[idx0], MAX_DISP, MIN_DISP, qmatrixs[stereoidx]);
-         }
+            //qing_write_stereo_info(filename, stereoidx, camName0, camName1, frameName, imgName0, imgName1, mskName0, mskName1, cxy[idx0], cxy[idx1], csz[idx0], MAX_DISP, MIN_DISP, qmatrixs[stereoidx]);
+            qing_write_stereo_info(filename, stereoidx, camName0, camName1, frameName, imgName0, imgName1, mskName0, mskName1, cxy[idx0], cxy[idx1], csz[idx0], max_disps[stereoidx], min_disps[stereoidx], qmatrixs[stereoidx]);
+        }
         else
         {
             cout << camName0 << ' ' << camName1 << endl;
