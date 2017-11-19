@@ -4,7 +4,7 @@ set (PROJECT_NAME StereoInfos)
 project( ${PROJECT_NAME} )
 
 option(WITH_OPENCV "" ON)
-option(WITH_PCL "" ON)
+option(WITH_PCL "" OFF)
 
 file(GLOB PROJECT_FILES
  "*.h"
