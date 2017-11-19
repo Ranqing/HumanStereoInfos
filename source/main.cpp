@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 #include "../../Qing/qing_common.h"
 #include "../../Qing/qing_dir.h"
 #include "../../Qing/qing_file_reader.h"
 #include "../../Qing/qing_file_writer.h"
 #include "../../Qing/qing_string.h"
+=======
+#include "../../../Qing/qing_common.h"
+#include "../../../Qing/qing_dir.h"
+#include "../../../Qing/qing_io.h"
+#include "../../../Qing/qing_string.h"
+>>>>>>> c2b24a288c34abf2f1975629a9db272a0d796b06
 
 #define MAX_DISP 480.f
 #define MIN_DISP 0.f
@@ -37,6 +44,32 @@ void qing_read_crop_infos(const string filename, vector<Point2i>& cxy, vector<Si
     }
 }
 
+void qing_read_disp_range_infos(const string filename, vector<float>& max_disps, vector<float>& min_disps) {
+    fstream fin(filename.c_str(), ios::in);
+    if(fin.is_open() == false) {
+        cerr << "failed to open " << filename << endl;
+        return ;
+    }
+
+    string s;
+    vector<string> words(0);
+    while(getline(fin, s)) {
+        if('#'==s[0]) continue;
+        words.clear();
+
+        qing_split_a_string_by_space(s, words);
+        string stereoName = words[0];
+        int maxd = string2int(words[1]);
+        int mind = string2int(words[2]);
+
+        max_disps.push_back(maxd);
+        min_disps.push_back(mind);
+    }
+
+    cout << "end of reading " << filename << ", max_disp size = " << max_disps.size() << ", min_disp size = " << min_disps.size() << endl;
+}
+
+
 string qing_get_msk_prefix(const string imageName)
 {
     string tempstr = imageName.substr(0, imageName.rfind('_'));
@@ -49,11 +82,17 @@ int main(int argc, char * argv[])
 {
     //generate stereo infos frame by frame
     cout << "Usage : " << argv[0]
+<<<<<<< HEAD
          << " /media/ranqing/Qing-WD-New/20170618/Humans_frame/ "
          << " /media/ranqing/Qing-WD-New/20170618/Calib_Results/ "
          << " /media/ranqing/Qing-WD-New/20170618/Infos/"
+=======
+         << " /media/ranqing/ranqing_wd/ZJU/HumanDatas/20161224/Humans_frame/ "
+         << " /media/ranqing/ranqing_wd/ZJU/HumanDatas/20161224/Calib_Results/ "
+>>>>>>> c2b24a288c34abf2f1975629a9db272a0d796b06
          << " FRM_0001 "
-         << " crop_infos.txt" << endl;
+         << " crop_infos.txt"
+         << " disp_range_info.txt"<< endl;
 
     if (argc != 6)
     {
@@ -63,18 +102,33 @@ int main(int argc, char * argv[])
 
     string imageFolder = argv[1];         //image folder
     string calibFolder = argv[2];         //calib folder
+<<<<<<< HEAD
     string infoFolder = argv[3];
     string frameName = argv[4];           //frame name
     string cropInfos = argv[5];           //crop infos
+=======
+    string frameName = argv[3];           //frame name
+    string cropInfos = argv[4];           //crop infos
+    string dispInfos = argv[5];           //disp range infos
+>>>>>>> c2b24a288c34abf2f1975629a9db272a0d796b06
     string outfolder = "./" + frameName;
 
     cout << "frame: " << frameName << endl;              //FRM
     cout << "image folder: " << imageFolder << endl;
     cout << "calib folder: " << calibFolder << endl;
     cout << "crop infos: " << cropInfos << endl;
+    cout << "disp infos: " << dispInfos << endl;
 
+<<<<<<< HEAD
     cropInfos = infoFolder + cropInfos;                 //media/ranqing/ranqing_wd/ZJU/HumanDatas/20161224/Humans_classified/ + crop_infos.txt
+=======
+    cropInfos = imageFolder + cropInfos;                 //media/ranqing/ranqing_wd/ZJU/HumanDatas/20161224/Humans_classified/ + crop_infos.txt
+    dispInfos = imageFolder + dispInfos;
+>>>>>>> c2b24a288c34abf2f1975629a9db272a0d796b06
     imageFolder = imageFolder + frameName ;
+
+    cout << cropInfos << endl;
+    cout << dispInfos << endl;
 
     qing_create_dir(outfolder);
 
@@ -123,7 +177,14 @@ int main(int argc, char * argv[])
         cout << filename << '\t' << qmatrixs[qmatrixs.size()-1] << endl;
     }
 
+<<<<<<< HEAD
     string suffix = ".png";
+=======
+    vector<float> max_disps(0), min_disps(0);
+    qing_read_disp_range_infos(dispInfos, max_disps, min_disps);
+
+    string suffix = ".jpg";
+>>>>>>> c2b24a288c34abf2f1975629a9db272a0d796b06
     for(int i = 0; i < imageLists.size() - 1;)
     {
         string imgName0 = imageLists[i];
@@ -163,8 +224,14 @@ int main(int argc, char * argv[])
             //MAXDISP
             //MINDISP
             //Qmatrix
+<<<<<<< HEAD
             qing_write_stereo_info(filename, stereoidx, camName0, camName1, frameName, imgName0, imgName1, mskName0, mskName1, cxy[idx0], cxy[idx1], csz[idx0], disp_ranges[idx0], MIN_DISP, qmatrixs[stereoidx]);
          }
+=======
+            //qing_write_stereo_info(filename, stereoidx, camName0, camName1, frameName, imgName0, imgName1, mskName0, mskName1, cxy[idx0], cxy[idx1], csz[idx0], MAX_DISP, MIN_DISP, qmatrixs[stereoidx]);
+            qing_write_stereo_info(filename, stereoidx, camName0, camName1, frameName, imgName0, imgName1, mskName0, mskName1, cxy[idx0], cxy[idx1], csz[idx0], max_disps[stereoidx], min_disps[stereoidx], qmatrixs[stereoidx]);
+        }
+>>>>>>> c2b24a288c34abf2f1975629a9db272a0d796b06
         else
         {
             cout << camName0 << ' ' << camName1 << endl;
