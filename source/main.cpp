@@ -10,6 +10,7 @@
 
 void qing_read_crop_infos(const string filename, vector<Point2i>& cxy, vector<Size>& csz, vector<int>& disp_ranges)
 {
+//    cout << filename << endl;
     fstream fin(filename.c_str(), ios::in);
     if(fin.is_open() == false)
     {
@@ -36,6 +37,7 @@ void qing_read_crop_infos(const string filename, vector<Point2i>& cxy, vector<Si
         csz.push_back(Size(w, h));
         disp_ranges.push_back(d);
     }
+//    cout << "haha" << endl;
 }
 
 void qing_read_disp_range_infos(const string filename, vector<float>& max_disps, vector<float>& min_disps) {
@@ -76,9 +78,9 @@ int main(int argc, char * argv[])
 {
     //generate stereo infos frame by frame
     cout << "Usage : " << argv[0]
-         << " ../../Data/20171018/Humans_frame/ "
-         << " ../../Data/20171018/Calib_Results/ "
-         << " ../../Data/20170618/Infos_cropper/"
+         << " /media/ranqing/Qing-WD-New/20171018/Rectified_Humans_frame/ "
+         << " /media/ranqing/Qing-WD-New/20171018/Calib_Results/ "
+         << " /media/ranqing/Qing-WD-New/20171018/Infos_crop_points/"
          << " 0001 " << endl;
 
     if (argc != 5) {
@@ -117,6 +119,7 @@ int main(int argc, char * argv[])
     cout << imageLists.size() << " files . " << cxy.size() << '\t' << csz.size() << '\t' << disp_ranges.size() << endl;
     sort(imageLists.begin(), imageLists.end());
 
+
     //generate stereo infos: no N03~N06
     int cam_num = 64;
     string cams[64] = { "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10", "A11", "A12", "A13", "A14", "A15", "A16",
@@ -154,14 +157,18 @@ int main(int argc, char * argv[])
     for(int i = 0; i < imageLists.size() - 1;)
     {
         string imgName0 = imageLists[i];
-        string camName0 = imgName0.substr(0, imgName0.find('_'));
+        string camName0 = imgName0.substr(0, 3);
         string imgName1 = imageLists[i+1];
-        string camName1 = imgName1.substr(0, imgName1.find('_'));
+        string camName1 = imgName1.substr(0, 3);
 
         string mskName0 = qing_get_msk_prefix(imgName0);                        //A03_IMG_1210
         string mskName1 = qing_get_msk_prefix(imgName1);                        //A04_IMG_1240
-        mskName0 = mskName0 + frameName.substr(frameName.find('_')) + suffix;
-        mskName1 = mskName1 + frameName.substr(frameName.find('_')) + suffix;
+
+        mskName0 = mskName0 + "_" + frameName + suffix;
+        mskName1 = mskName1 + "_" +  frameName + suffix;
+        cout << mskName0 << endl;
+        cout << mskName1 << endl;
+        cout << endl;
 
         if(stereoNameDict.end() != stereoNameDict.find(camName0) && camName1 == stereoNameDict[camName0])
         {
