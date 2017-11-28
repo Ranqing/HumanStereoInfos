@@ -74,6 +74,10 @@ string qing_get_msk_prefix(const string imageName)
 
 }
 
+
+/* ./StereoInfos /media/ranqing/Work/RQProjects/ZJU/HumanDatas_20171018/Humans_frame/
+ * /media/ranqing/Work/RQProjects/ZJU/HumanDatas_20171018/Calib_Results/
+ *  /media/ranqing/Work/RQProjects/ZJU/HumanDatas_20171018/Infos_crop_points/ 0199 */
 int main(int argc, char * argv[])
 {
     //generate stereo infos frame by frame
